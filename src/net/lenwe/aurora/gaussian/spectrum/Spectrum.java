@@ -7,7 +7,7 @@ import Jampack.Z;
 
 public class Spectrum {
 	public static List<Z> listOfEigenvalues = Collections.synchronizedList(new ArrayList<Z>());
-	public static List<Double> listOfKappas = Collections.synchronizedList(new ArrayList<Double>());
+	
 	
 	public static void main(String[] args) throws Exception {
 		switch(args.length){
@@ -25,18 +25,20 @@ public class Spectrum {
 				dim,
 				n
 			);
-			double averageK = (double) 0;
-			for(double i: listOfKappas){
-				averageK += i;
-			}
-			averageK /= listOfKappas.size();
-			System.out.println("Average module of K = " + averageK);
-			System.err.println("Creating chart.");
-			EigenChart chart = new EigenChart("Eigen values for " + n + " Gaussian " + dim + "x" + dim + " matrices.", listOfEigenvalues);	
+
+			EigenChart chart = new EigenChart("Eigen values for " + n + " Gaussian " + dim + "x" + dim + " matrices, kappa=" + Kappas.getAvg(), listOfEigenvalues);	
 			chart.pack();
 	        RefineryUtilities.centerFrameOnScreen(chart);
 	        System.err.println("Chart created.");
 	        chart.setVisible(true);
+	        
+	        EigenHistogram histogram = new EigenHistogram("Histogram", listOfEigenvalues);
+	        histogram.pack();
+	        RefineryUtilities.centerFrameOnScreen(histogram);
+	        histogram.setVisible(true);
+	        
+	        
+	        
 	        return;
 	}
 

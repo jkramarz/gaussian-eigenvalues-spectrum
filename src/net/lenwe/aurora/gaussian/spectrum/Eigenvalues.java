@@ -1,13 +1,17 @@
 package net.lenwe.aurora.gaussian.spectrum;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
+
 import Jampack.Eig;
 import Jampack.JampackException;
 import Jampack.Rand;
 import Jampack.Times;
-import Jampack.Z;
+import Jampack.Zdiagmat;
 import Jampack.Zmat;
-
+import java.lang.Math;
 class Eigenvalues implements Runnable{
 	static int n;
 	static CountDownLatch doneSignal;
@@ -18,7 +22,7 @@ class Eigenvalues implements Runnable{
 		this(
 			dimmension,
 			number, 
-			Runtime.getRuntime().availableProcessors() * 2
+			Runtime.getRuntime().availableProcessors()
 		);
 	}
 	
@@ -51,25 +55,15 @@ class Eigenvalues implements Runnable{
 				for(int i = 1; i <= n; i++){
 					Spectrum.listOfEigenvalues.add(eig.D.get(i));
 				}
-				Eig kapp = new Eig(Times.aah(zmat));
-				double maxDouble = Double.MIN_VALUE, minDouble = Double.MAX_VALUE;
-				Z maxZ = null, minZ = null;
-				for(int i = 1; i < kapp.D.dx; i++){
-					Z tZ = kapp.D.get(i);
-					double tDouble = Z.abs(tZ);
-					if(tDouble > maxDouble){
-						maxZ = tZ;
-						maxDouble = tDouble;
-					}
-					if(tDouble < minDouble){
-						minZ = tZ;
-						minDouble = tDouble;
-					}
+				Zmat num = Times.aah(zmat);
+				Zdiagmat gammasDiag = (new Eig(num)).D;
+				List<Double> gammas = new ArrayList<>();
+				for(int i = 1; i < gammasDiag.n; i++){
+					gammas.add(gammasDiag.get(i).re);
 				}
-				Z K = new Z().Div(maxZ,  minZ);
-				
-				//System.err.println("K: (" + K.re + "," +K.im + ") " + "maxZ: (" + maxZ.re + "," +maxZ.im + ") " + "minZ: (" + minZ.re + "," +minZ.im + ")");
-				Spectrum.listOfKappas.add(Math.sqrt(Z.abs(K)));
+				Kappas.add(
+						Math.sqrt(Collections.max(gammas) / Collections.min(gammas))
+						);
 			}catch(JampackException e){
 				repeats++;
 			}
