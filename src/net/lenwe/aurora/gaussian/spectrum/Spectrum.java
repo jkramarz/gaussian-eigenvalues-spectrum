@@ -6,20 +6,42 @@ import org.jfree.ui.RefineryUtilities;
 import Jampack.Z;
 
 public class Spectrum {
-	public static List<Z> list = Collections.synchronizedList(new ArrayList<Z>());
-
+	public static List<Z> listOfEigenvalues = Collections.synchronizedList(new ArrayList<Z>());
+	public static List<Double> listOfKappas = Collections.synchronizedList(new ArrayList<Double>());
+	
 	public static void main(String[] args) throws Exception {
-		int n = 1000;
-		int dim = 111;
-		new Eigenvalues(
-			dim,
-			n
-		);
-		System.err.println("Creating chart.");
-		EigenChart chart = new EigenChart("Eigen values for " + n + " Gaussian " + dim + "x" + dim + " matrices.", list);
-		chart.pack();
-        RefineryUtilities.centerFrameOnScreen(chart);
-        System.err.println("Chart created.");
-        chart.setVisible(true);
+		switch(args.length){
+			case 2:
+				compute(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
+				break;
+			default:
+				usage();
+				break;
+		}
+	}
+
+	private static void compute(int dim, int n) throws InterruptedException {
+			new Eigenvalues(
+				dim,
+				n
+			);
+			double averageK = (double) 0;
+			for(double i: listOfKappas){
+				averageK += i;
+			}
+			averageK /= listOfKappas.size();
+			System.out.println("Average module of K = " + averageK);
+			System.err.println("Creating chart.");
+			EigenChart chart = new EigenChart("Eigen values for " + n + " Gaussian " + dim + "x" + dim + " matrices.", listOfEigenvalues);	
+			chart.pack();
+	        RefineryUtilities.centerFrameOnScreen(chart);
+	        System.err.println("Chart created.");
+	        chart.setVisible(true);
+	        return;
+	}
+
+	private static void usage() {
+		System.out.println("usage: java filename matrices_dimmension number_of_matrices");
+		return;
 	}
 }

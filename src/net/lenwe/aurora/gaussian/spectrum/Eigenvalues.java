@@ -4,6 +4,8 @@ import java.util.concurrent.CountDownLatch;
 import Jampack.Eig;
 import Jampack.JampackException;
 import Jampack.Rand;
+import Jampack.Times;
+import Jampack.Z;
 import Jampack.Zmat;
 
 class Eigenvalues implements Runnable{
@@ -47,8 +49,27 @@ class Eigenvalues implements Runnable{
 				Zmat zmat = new Zmat(Rand.nzmat(n, n));
 				Eig eig = new Eig(zmat);
 				for(int i = 1; i <= n; i++){
-					Spectrum.list.add(eig.D.get(i));
+					Spectrum.listOfEigenvalues.add(eig.D.get(i));
 				}
+				Eig kapp = new Eig(Times.aah(zmat));
+				double maxDouble = Double.MIN_VALUE, minDouble = Double.MAX_VALUE;
+				Z maxZ = null, minZ = null;
+				for(int i = 1; i < kapp.D.dx; i++){
+					Z tZ = kapp.D.get(i);
+					double tDouble = Z.abs(tZ);
+					if(tDouble > maxDouble){
+						maxZ = tZ;
+						maxDouble = tDouble;
+					}
+					if(tDouble < minDouble){
+						minZ = tZ;
+						minDouble = tDouble;
+					}
+				}
+				Z K = new Z().Div(maxZ,  minZ);
+				
+				//System.err.println("K: (" + K.re + "," +K.im + ") " + "maxZ: (" + maxZ.re + "," +maxZ.im + ") " + "minZ: (" + minZ.re + "," +minZ.im + ")");
+				Spectrum.listOfKappas.add(Math.sqrt(Z.abs(K)));
 			}catch(JampackException e){
 				repeats++;
 			}
