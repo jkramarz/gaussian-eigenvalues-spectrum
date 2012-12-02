@@ -1,7 +1,7 @@
 gaussian-eigenvalues-spectrum
 =============================
 
-Plots eigenvalues of random gaussian matrices
+Plots eigenvalues of normal random gaussian matrices 
 
 Requirements:
 * JFreeChart - http://www.jfree.org/jfreechart/
