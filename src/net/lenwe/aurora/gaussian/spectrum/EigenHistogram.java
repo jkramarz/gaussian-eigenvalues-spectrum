@@ -42,7 +42,7 @@ public class EigenHistogram extends ApplicationFrame {
     		value[i] = Z.abs(list.get(i));
     	}
 		
-	    int number = list.size()/100;
+	    int number = (int) Math.sqrt(list.size());
 	    dataset.addSeries("Eigenvalues",value,number);
 		return dataset;
 	    
